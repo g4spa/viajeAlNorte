@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Norte Argentino · Septiembre 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+
+  <svg class="hero-mountains" viewBox="0 0 1440 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="mtn1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#3D2810" stop-opacity="0.9"/>
+        <stop offset="100%" stop-color="#1A1410" stop-opacity="1"/>
+      </linearGradient>
+      <linearGradient id="mtn2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#C4602A" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="#2E1E10" stop-opacity="1"/>
+      </linearGradient>
+      <linearGradient id="mtn3" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#7B5EA7" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#1A1410" stop-opacity="1"/>
+      </linearGradient>
+    </defs>
+    <path d="M0,280 L80,200 L160,240 L280,140 L400,190 L520,120 L640,180 L760,100 L880,160 L1000,90 L1120,150 L1240,110 L1360,170 L1440,130 L1440,400 L0,400Z" fill="url(#mtn3)" opacity="0.6"/>
+    <path d="M0,320 L120,240 L200,280 L320,200 L440,250 L560,180 L680,230 L800,160 L920,220 L1040,170 L1160,240 L1280,190 L1440,210 L1440,400 L0,400Z" fill="url(#mtn2)" opacity="0.7"/>
+    <path d="M0,380 L100,300 L180,340 L260,280 L360,320 L460,260 L560,310 L660,250 L760,300 L860,260 L960,310 L1060,270 L1160,320 L1260,280 L1360,330 L1440,300 L1440,400 L0,400Z" fill="url(#mtn1)"/>
+    <g fill="#1A2A10" opacity="0.5">
+      <rect x="60" y="350" width="6" height="40"/>
+      <rect x="50" y="360" width="16" height="6"/>
+      <rect x="130" y="340" width="5" height="50"/>
+      <rect x="120" y="353" width="15" height="5"/>
+      <rect x="1340" y="345" width="6" height="45"/>
+      <rect x="1330" y="358" width="16" height="5"/>
+      <rect x="1390" y="355" width="5" height="35"/>
+    </g>
+  </svg>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Jujuy · Salta · Septiembre 2026</p>
+    <h1 class="hero-title">Viaje <em>al</em><br>Norte Argentino</h1>
+    <p class="hero-sub">11 días · Quebrada · Yungas · Puna · Valles</p>
+    <div class="hero-badges">
+      <span class="badge badge-tierra">14 – 24 septiembre</span>
+      <span class="badge badge-cactus">Citroen C3 Automático · Hertz Salta</span>
+      <span class="badge badge-puna">Vuelo regreso 24/09 · 16:00</span>
+    </div>
+    <div class="scroll-cue">explorar</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">Viaje al Norte · Sept 2026</div>
+  <ul class="nav-links">
+    <li><a href="#itinerario">Itinerario</a></li>
+    <li><a href="#auto">Auto</a></li>
+    <li><a href="#alojamiento">Alojamiento</a></li>
+    <li><a href="#rutas">Rutas</a></li>
+    <li><a href="#actividades">Actividades</a></li>
+    <li><a href="#presupuesto">Presupuesto</a></li>
+    <li><a href="#traslado">Traslado</a></li>
+    <li><a href="#logistica">Logística</a></li>
+    <li><a href="#videos">Videos</a></li>
+    <li><a href="#links">Links</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- 01. ITINERARIO -->
+  <section id="itinerario">
+    <div class="section-head">
+      <div class="section-number">01</div>
+      <div class="section-label">
+        <small>Día a día</small>
+        <h2>Itinerario</h2>
+      </div>
+    </div>
+    <div class="day-list" id="day-list"></div>
+  </section>
+
+  <div class="fauna-divider">🦙 ✦ 🌵 ✦ 🦅</div>
+
+  <!-- 02. AUTO -->
+  <section id="auto">
+    <div class="section-head">
+      <div class="section-number">02</div>
+      <div class="section-label">
+        <small>Hertz · Aeropuerto Salta</small>
+        <h2>Auto</h2>
+      </div>
+    </div>
+    <div class="cards" style="margin-bottom:1.25rem">
+      <div class="card"><div class="card-label">Vehículo</div><div class="card-val">Citroen C3 Automático</div><div class="card-sub">Hertz · Aeropuerto Salta (SLA)</div></div>
+      <div class="card"><div class="card-label">Retiro</div><div class="card-val">14/09 · 10:00 hs</div><div class="card-sub">Aeropuerto Salta</div></div>
+      <div class="card"><div class="card-label">Devolución</div><div class="card-val">23/09 · 10:00 hs</div><div class="card-sub">Misma sucursal</div></div>
+      <div class="card"><div class="card-label">Duración</div><div class="card-val">9 días</div><div class="card-sub">14 al 23 de septiembre</div></div>
+    </div>
+    <div class="note"><strong>Cancelación prepago:</strong> cargo fijo hasta 24hs antes + 4% administrativo. Dentro de 24hs: 1 día de alquiler + 4%.</div>
+    <div class="note"><strong>Franquicia y depósito:</strong> consultar monto bloqueado en tarjeta antes de pagar. Puede ser significativo.</div>
+    <div class="note note-warning"><strong>⚠ Importante:</strong> Evitar ripio pesado con el C3. No manejar de noche en rutas de montaña. Tanque siempre arriba del 50%.</div>
+  </section>
+
+  <!-- 03. ALOJAMIENTO -->
+  <section id="alojamiento">
+    <div class="section-head">
+      <div class="section-number">03</div>
+      <div class="section-label">
+        <small>9 noches · 6 destinos</small>
+        <h2>Alojamiento</h2>
+      </div>
+    </div>
+    <div id="aloj-list" class="day-list"></div>
+  </section>
+
+  <div class="fauna-divider">🌺 ✦ 🏔 ✦ 🌿</div>
+
+  <!-- 04. RUTAS -->
+  <section id="rutas">
+    <div class="section-head">
+      <div class="section-number">04</div>
+      <div class="section-label">
+        <small>~1.400 km totales</small>
+        <h2>Rutas y distancias</h2>
+      </div>
+    </div>
+    <div class="cards" style="margin-bottom:1.5rem">
+      <div class="card"><div class="card-label">Km estimados totales</div><div class="card-val">~1.400 km</div><div class="card-sub">Todo el recorrido</div></div>
+      <div class="card"><div class="card-label">Horas de manejo</div><div class="card-val">~18 hs</div><div class="card-sub">Sin contar paradas</div></div>
+      <div class="card"><div class="card-label">Nafta estimada</div><div class="card-val">~115 litros</div><div class="card-sub">C3 ~8L/100km</div></div>
+    </div>
+    <div class="route-list" id="route-list"></div>
+  </section>
+
+  <!-- 05. ACTIVIDADES -->
+  <section id="actividades">
+    <div class="section-head">
+      <div class="section-number">05</div>
+      <div class="section-label">
+        <small>Por destino</small>
+        <h2>Actividades</h2>
+      </div>
+    </div>
+    <div class="act-grid" id="act-grid"></div>
+  </section>
+
+  <div class="fauna-divider">🦜 ✦ 🌾 ✦ 🦔</div>
+
+  <!-- 06. PRESUPUESTO -->
+  <section id="presupuesto">
+    <div class="section-head">
+      <div class="section-number">06</div>
+      <div class="section-label">
+        <small>2 personas · 10 días activos</small>
+        <h2>Presupuesto estimado</h2>
+      </div>
+    </div>
+    <div class="scenario-tabs">
+      <button class="sc-tab active" onclick="setScenario('eco', this)">Económico<br><small>Hostales + picnics</small></button>
+      <button class="sc-tab" onclick="setScenario('mid', this)">Intermedio<br><small>3★ + restos medios</small></button>
+      <button class="sc-tab" onclick="setScenario('com', this)">Cómodo<br><small>Boutique + cenas</small></button>
+    </div>
+    <div class="metric-bar">
+      <div class="metric-box"><div class="label">Total · 2 personas</div><div class="val" id="m-total">$0</div><div class="sub" id="m-usd">≈ USD 0</div></div>
+      <div class="metric-box"><div class="label">Por persona</div><div class="val" id="m-pp">$0</div><div class="sub">mitad del total</div></div>
+      <div class="metric-box"><div class="label">Por día (2 pers.)</div><div class="val" id="m-pd">$0</div><div class="sub">sobre 10 días</div></div>
+    </div>
+    <table class="budget-table">
+      <thead><tr><th>Categoría</th><th>Detalle</th><th class="td-right">Monto (2 pers.)</th></tr></thead>
+      <tbody id="budget-tbody"></tbody>
+    </table>
+    <div class="note"><strong>Nafta:</strong> precio súper en Salta ~$2.050/L (marzo 2026). Proyectado sept 2026: ~$2.300–2.600/L.</div>
+    <div class="note"><strong>Alojamiento:</strong> septiembre es temporada baja en la Quebrada — precios más bajos que verano.</div>
+    <div class="note"><strong>Tipo de cambio base:</strong> $1.350 ARS/USD estimado para septiembre 2026. Puede variar.</div>
+  </section>
+
+  <!-- 07. TRASLADO -->
+  <section id="traslado">
+    <div class="section-head">
+      <div class="section-number">07</div>
+      <div class="section-label">
+        <small>Mar del Plata ↔ Buenos Aires ↔ Salta</small>
+        <h2>Traslado</h2>
+      </div>
+    </div>
+    <div class="transport-grid">
+      <div class="transport-card">
+        <h4>MdP → Retiro (ida)</h4>
+        <p>Bus directo · ~5 hs · Plusmar, Platabus, Flecha Bus. Salida Terminal MdP.</p>
+        <div class="price">$28.000 – $50.000 / persona</div>
+      </div>
+      <div class="transport-card">
+        <h4>Retiro → MdP (vuelta)</h4>
+        <p>Bus directo · ~5 hs · mismas empresas. Llegada Terminal MdP.</p>
+        <div class="price">$28.000 – $50.000 / persona</div>
+      </div>
+      <div class="transport-card">
+        <h4>Retiro → Aeroparque</h4>
+        <p>Taxi/remis ~$15.000–25.000, o Metrobus + subte ~$1.500. Vuelo BUE–SLA.</p>
+        <div class="price">según medio elegido</div>
+      </div>
+      <div class="transport-card">
+        <h4>Total ida y vuelta · 2 pers.</h4>
+        <p>Solo tramo MdP–Buenos Aires (vuelos ya incluidos en el viaje).</p>
+        <div class="price">$112.000 – $180.000</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08. LOGÍSTICA -->
+  <section id="logistica">
+    <div class="section-head">
+      <div class="section-number">08</div>
+      <div class="section-label">
+        <small>Marcá lo resuelto</small>
+        <h2>Checklist logístico</h2>
+      </div>
+    </div>
+    <div class="checklist" id="checklist"></div>
+    <div class="tips-grid">
+      <div class="tip-card"><span class="icon">🗺</span><strong>Mapas offline</strong><p>Google Maps o Maps.me offline antes de salir de Salta. Sin señal en Quebrada y Yungas.</p></div>
+      <div class="tip-card"><span class="icon">💵</span><strong>Efectivo</strong><p>Muchos lugares pequeños no aceptan tarjeta: comedores, miradores, artesanos de feria.</p></div>
+      <div class="tip-card"><span class="icon">⛽</span><strong>Combustible</strong><p>Cargar siempre arriba del 50%. Entre Tilcara y San Francisco hay pocas estaciones.</p></div>
+      <div class="tip-card"><span class="icon">🧥</span><strong>Ropa</strong><p>Por capas + rompeviento + traje de baño + toalla microfibra. Septiembre puede ser frío de mañana.</p></div>
+      <div class="tip-card"><span class="icon">🌤</span><strong>Clima</strong><p>Revisar clima 48hs antes de ir a Hornocal y Termas del Río Jordán. Ambos dependen mucho del tiempo.</p></div>
+      <div class="tip-card"><span class="icon">🧗</span><strong>Guía Termas</strong><p>El trekking a las Termas del Río Jordán requiere guía obligatorio. Reservar con anticipación.</p></div>
+    </div>
+  </section>
+
+  <div class="fauna-divider">🌄 ✦ 🦙 ✦ 🌵</div>
+
+  <!-- 09. VIDEOS INSTAGRAM -->
+  <section id="videos">
+    <div class="section-head">
+      <div class="section-number">09</div>
+      <div class="section-label">
+        <small>Memories del viaje</small>
+        <h2>Videos de Instagram</h2>
+      </div>
+    </div>
+    <div class="ig-section">
+      <p class="ig-intro">
+        Cuando subas los Reels o posts a Instagram, pegá el link directo de cada publicación abajo y aparecerá incrustado acá.<br>
+        <strong>Cómo obtener el link:</strong> en Instagram → los tres puntos del post → "Copiar link" → pegarlo abajo.
+      </p>
+      <div class="ig-grid" id="ig-grid"></div>
+      <div class="ig-add-row">
+        <input class="ig-input" id="ig-new-url" placeholder="https://www.instagram.com/reel/..."/>
+        <input class="ig-input" id="ig-new-label" placeholder="Nombre del video (ej: Salinas Grandes)"/>
+        <button class="ig-btn" onclick="addIgSlot()">+ Agregar video</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. LINKS -->
+  <section id="links">
+    <div class="section-head">
+      <div class="section-number">10</div>
+      <div class="section-label">
+        <small>Recursos útiles</small>
+        <h2>Links</h2>
+      </div>
+    </div>
+    <div class="link-grid">
+      <a class="link-card" href="https://www.argentina.gob.ar/parquesnacionales/calilegua" target="_blank">
+        <span class="icon">🌿</span><strong>Parque Calilegua</strong><span>Info oficial · horarios y acceso</span>
+      </a>
+      <a class="link-card" href="https://www.turismo.jujuy.gob.ar" target="_blank">
+        <span class="icon">🗺</span><strong>Turismo Jujuy</strong><span>Portal oficial provincial</span>
+      </a>
+      <a class="link-card" href="https://www.turismosalta.gov.ar" target="_blank">
+        <span class="icon">🏔</span><strong>Turismo Salta</strong><span>Portal oficial provincial</span>
+      </a>
+      <a class="link-card" href="https://www.hertz.com.ar" target="_blank">
+        <span class="icon">🚗</span><strong>Hertz Argentina</strong><span>Gestión de reserva del auto</span>
+      </a>
+      <a class="link-card" href="https://weather.com/es-AR" target="_blank">
+        <span class="icon">🌤</span><strong>Clima</strong><span>Revisar 48hs antes de Hornocal y Termas</span>
+      </a>
+      <a class="link-card" href="https://maps.google.com" target="_blank">
+        <span class="icon">📍</span><strong>Google Maps</strong><span>Descargar mapas offline antes de salir</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Hecho con ❤ para <strong>Yam + Gaspar</strong> · Norte Argentino · Septiembre 2026</p>
+  <p style="margin-top:6px;opacity:.5">Quebrada de Humahuaca · Yungas · Valles Calchaquíes</p>
+</footer>
+
+<!-- JS: orden importante — data primero, luego render, luego app -->
+<script src="js/data.js"></script>
+<script src="js/render.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
