@@ -10,3 +10,6 @@ Thumbs.db
 
 # Netlify
 .netlify/
+
+# Local Supabase configuration
+supabase-config.js

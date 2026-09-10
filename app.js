@@ -9,7 +9,8 @@ const state = {
   media: [],
   favorites: store.get('noa-favorites', []),
   mediaFilter: 'all',
-  privacy: store.get('noa-privacy', false)
+  privacy: store.get('noa-privacy', false),
+  cloudUser: null
 };
 
 function escapeHtml(value = '') {
@@ -59,11 +60,14 @@ function renderMemories() {
   } else {
     target.innerHTML = state.memories.map((memory, index) => `
       <article class="entry"><div class="entry-head"><span>${memory.mood} ${escapeHtml(memory.place || 'Sin destino')}</span><span>${escapeHtml(memory.date || 'Sin fecha')} <button data-remove-memory="${index}" aria-label="Eliminar entrada">×</button></span></div>
-      <p>${escapeHtml(memory.text)}</p><button class="favorite-memory" data-favorite-memory="${index}" type="button">${state.favorites.includes(`memory-${index}`) ? '♥' : '♡'}</button></article>`).join('');
+      <p>${escapeHtml(memory.text)}</p><button class="favorite-memory" data-favorite-memory="${index}" type="button">${state.favorites.includes(`memory-${memory.id || index}`) ? '♥' : '♡'}</button></article>`).join('');
     target.querySelectorAll('[data-remove-memory]').forEach(button => button.addEventListener('click', () => {
       state.memories.splice(Number(button.dataset.removeMemory), 1); store.set('noa-memories', state.memories); renderMemories(); renderStats();
     }));
-    target.querySelectorAll('[data-favorite-memory]').forEach(button => button.addEventListener('click', () => toggleFavorite(`memory-${button.dataset.favoriteMemory}`)));
+    target.querySelectorAll('[data-favorite-memory]').forEach(button => button.addEventListener('click', () => {
+      const memory = state.memories[Number(button.dataset.favoriteMemory)];
+      toggleFavorite(`memory-${memory.id || button.dataset.favoriteMemory}`);
+    }));
   }
   renderFavorites();
 }
@@ -74,6 +78,7 @@ function renderChecklist() {
     <label class="check-item ${state.checks[index] ? 'done' : ''}"><input type="checkbox" data-check="${index}" ${state.checks[index] ? 'checked' : ''}>${item}</label>`).join('');
   target.querySelectorAll('[data-check]').forEach(input => input.addEventListener('change', () => {
     state.checks[input.dataset.check] = input.checked; store.set('noa-checks', state.checks); input.parentElement.classList.toggle('done', input.checked); updateProgress();
+    if (state.cloudUser) noaCloud.updateChecklist(state.cloudUser.id, checks[input.dataset.check], input.checked, Number(input.dataset.check)).catch(showCloudError);
   }));
   updateProgress();
 }
@@ -96,6 +101,15 @@ function renderBudget(scenario = 'eco') {
 function toggleFavorite(id) {
   state.favorites = state.favorites.includes(id) ? state.favorites.filter(item => item !== id) : [...state.favorites, id];
   store.set('noa-favorites', state.favorites); renderMemories(); renderMedia(); renderStats();
+  if (state.cloudUser) {
+    const separator = id.indexOf('-');
+    const resourceType = id.slice(0, separator);
+    const resourceId = id.slice(separator + 1);
+    const operation = state.favorites.includes(id)
+      ? noaCloud.client.from('favorites').insert({ user_id: state.cloudUser.id, resource_type: resourceType, resource_id: resourceId })
+      : noaCloud.client.from('favorites').delete().eq('user_id', state.cloudUser.id).eq('resource_type', resourceType).eq('resource_id', resourceId);
+    operation.then(({ error }) => { if (error) showCloudError(error); });
+  }
 }
 
 function renderFavorites() {
@@ -121,6 +135,14 @@ function openDatabase() {
 }
 
 async function loadMedia() {
+  if (state.cloudUser) {
+    try {
+      const data = await noaCloud.loadData(state.cloudUser.id);
+      state.media = data.media;
+      renderMedia(); renderStats();
+    } catch (error) { showCloudError(error); }
+    return;
+  }
   try {
     const db = await openDatabase();
     const request = db.transaction('media').objectStore('media').getAll();
@@ -133,13 +155,21 @@ function renderMedia() {
   const media = state.media.filter(item => state.mediaFilter === 'all' || (state.mediaFilter === 'favorite' ? state.favorites.includes(`media-${item.id}`) : item.type.startsWith(state.mediaFilter)));
   if (!media.length) { target.innerHTML = '<div class="media-empty"><span>◌</span><p>No hay recuerdos en este filtro todavía.</p></div>'; return; }
   target.innerHTML = media.map(item => {
-    const source = URL.createObjectURL(item.file);
+    const source = item.url || URL.createObjectURL(item.file);
     const favorite = state.favorites.includes(`media-${item.id}`);
     return `<figure class="media-card">${item.type.startsWith('video') ? `<video src="${source}" controls></video>` : `<img src="${source}" alt="${escapeHtml(item.name)}">`}<button class="media-remove" data-remove-media="${item.id}" aria-label="Eliminar ${escapeHtml(item.name)}">×</button><button class="media-favorite" data-favorite-media="${item.id}" type="button">${favorite ? '♥' : '♡'}</button><figcaption class="media-caption">${escapeHtml(item.name)}</figcaption></figure>`;
   }).join('');
   target.querySelectorAll('[data-remove-media]').forEach(button => button.addEventListener('click', async () => {
-    const id = Number(button.dataset.removeMedia); const db = await openDatabase();
-    db.transaction('media', 'readwrite').objectStore('media').delete(id); state.media = state.media.filter(item => item.id !== id); renderMedia(); renderStats();
+    const id = button.dataset.removeMedia;
+    if (state.cloudUser) {
+      const item = state.media.find(media => String(media.id) === String(id));
+      const result = await noaCloud.client.from('media').delete().eq('id', id).eq('user_id', state.cloudUser.id);
+      if (result.error) { showCloudError(result.error); return; }
+      if (item) await noaCloud.client.storage.from('noa-media').remove([item.storage_path]);
+    } else {
+      const db = await openDatabase(); db.transaction('media', 'readwrite').objectStore('media').delete(Number(id));
+    }
+    state.media = state.media.filter(item => String(item.id) !== String(id)); renderMedia(); renderStats();
   }));
   target.querySelectorAll('[data-favorite-media]').forEach(button => button.addEventListener('click', () => toggleFavorite(`media-${button.dataset.favoriteMedia}`)));
 }
@@ -147,6 +177,45 @@ function renderMedia() {
 function exportBackup() {
   const payload = { version: 1, exportedAt: new Date().toISOString(), memories: state.memories, checks: state.checks, favorites: state.favorites };
   const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })); link.download = 'bitacora-noa-respaldo.json'; link.click();
+}
+
+function showCloudError(error) {
+  document.querySelector('#cloud-message').textContent = error.message || 'No se pudo sincronizar.';
+}
+
+async function loadCloudData() {
+  if (!state.cloudUser) return;
+  const data = await noaCloud.loadData(state.cloudUser.id);
+  state.memories = data.memories.map(item => ({ ...item, date: item.memory_date }));
+  state.checks = Object.fromEntries(data.checklist.map(item => [checks.indexOf(item.label), item.completed]));
+  state.favorites = data.favorites.map(item => `${item.resource_type}-${item.resource_id}`);
+  state.media = data.media;
+  renderMemories(); renderChecklist(); renderMedia(); renderStats();
+}
+
+async function initCloud() {
+  const banner = document.querySelector('#cloud-banner');
+  banner.hidden = false;
+  if (!noaCloud.enabled) {
+    document.querySelector('#cloud-title').textContent = 'Falta conectar Supabase';
+    document.querySelector('#cloud-message').textContent = 'Copiá supabase-config.example.js como supabase-config.js y completá las credenciales.';
+    document.querySelector('#auth-form').hidden = true;
+    return;
+  }
+  try {
+    state.cloudUser = await noaCloud.user();
+    updateAuthUi();
+    if (state.cloudUser) await loadCloudData();
+  } catch (error) { showCloudError(error); }
+}
+
+function updateAuthUi() {
+  const form = document.querySelector('#auth-form');
+  const logout = document.querySelector('#auth-logout');
+  form.hidden = Boolean(state.cloudUser);
+  logout.hidden = !state.cloudUser;
+  document.querySelector('#cloud-title').textContent = state.cloudUser ? `Bitácora sincronizada · ${state.cloudUser.email}` : 'Conectar bitácora';
+  document.querySelector('#cloud-message').textContent = state.cloudUser ? 'Sus datos se guardan en Supabase.' : 'Ingresen para sincronizar diario, checklist, favoritos y multimedia.';
 }
 
 function importBackup(file) {
@@ -176,17 +245,27 @@ function initCountdown() {
   document.querySelector('#countdown-value').textContent = daysLeft > 0 ? daysLeft : '✦';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderTimeline(); renderMap(); renderMemories(); renderChecklist(); renderBudget(); renderStats(); loadMedia(); loadWeather(); initCountdown(); applyPrivacyMode();
-  document.querySelector('#memory-form').addEventListener('submit', event => {
+document.addEventListener('DOMContentLoaded', async () => {
+  renderTimeline(); renderMap(); renderMemories(); renderChecklist(); renderBudget(); renderStats(); loadMedia(); loadWeather(); initCountdown(); applyPrivacyMode(); await initCloud();
+  document.querySelector('#memory-form').addEventListener('submit', async event => {
     event.preventDefault();
-    state.memories.unshift({ text: document.querySelector('#memory-text').value.trim(), place: document.querySelector('#memory-place').value.trim(), date: document.querySelector('#memory-date').value, mood: document.querySelector('input[name="mood"]:checked').value });
-    store.set('noa-memories', state.memories); event.target.reset(); document.querySelector('#save-status').textContent = 'Guardado ✓'; renderMemories(); renderStats();
+    const memory = { text: document.querySelector('#memory-text').value.trim(), place: document.querySelector('#memory-place').value.trim(), date: document.querySelector('#memory-date').value, mood: document.querySelector('input[name="mood"]:checked').value };
+    if (state.cloudUser) {
+      try { const saved = await noaCloud.insertMemory(state.cloudUser.id, memory); state.memories.unshift({ ...saved, date: saved.memory_date }); }
+      catch (error) { showCloudError(error); return; }
+    } else { state.memories.unshift(memory); store.set('noa-memories', state.memories); }
+    event.target.reset(); document.querySelector('#save-status').textContent = 'Guardado ✓'; renderMemories(); renderStats();
   });
   document.querySelector('#media-input').addEventListener('change', async event => {
-    const db = await openDatabase(); const transaction = db.transaction('media', 'readwrite'); const objectStore = transaction.objectStore('media');
-    [...event.target.files].forEach(file => objectStore.add({ file, name: file.name, type: file.type }));
-    transaction.oncomplete = loadMedia; event.target.value = '';
+    if (state.cloudUser) {
+      try { for (const file of event.target.files) state.media.unshift(await noaCloud.uploadMedia(state.cloudUser.id, file)); renderMedia(); renderStats(); }
+      catch (error) { showCloudError(error); }
+    } else {
+      const db = await openDatabase(); const transaction = db.transaction('media', 'readwrite'); const objectStore = transaction.objectStore('media');
+      [...event.target.files].forEach(file => objectStore.add({ file, name: file.name, type: file.type }));
+      transaction.oncomplete = loadMedia;
+    }
+    event.target.value = '';
   });
   document.querySelectorAll('.budget-tabs button').forEach(button => button.addEventListener('click', () => renderBudget(button.dataset.scenario)));
   document.querySelectorAll('#media-filters button').forEach(button => button.addEventListener('click', () => { state.mediaFilter = button.dataset.filter; document.querySelectorAll('#media-filters button').forEach(item => item.classList.toggle('active', item === button)); renderMedia(); }));
@@ -195,4 +274,21 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#restore-input').addEventListener('change', event => { if (event.target.files[0]) importBackup(event.target.files[0]); });
   document.querySelector('#export-button').addEventListener('click', () => window.print());
   document.querySelector('#budget-export').addEventListener('click', () => window.print());
+  document.querySelector('#auth-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    try {
+      state.cloudUser = await noaCloud.signIn(document.querySelector('#auth-email').value, document.querySelector('#auth-password').value);
+      updateAuthUi(); await loadCloudData();
+    } catch (error) { showCloudError(error); }
+  });
+  document.querySelector('#auth-signup').addEventListener('click', async () => {
+    try {
+      state.cloudUser = await noaCloud.signUp(document.querySelector('#auth-email').value, document.querySelector('#auth-password').value);
+      updateAuthUi();
+      document.querySelector('#cloud-message').textContent = 'Revisá tu email para confirmar la cuenta.';
+    } catch (error) { showCloudError(error); }
+  });
+  document.querySelector('#auth-logout').addEventListener('click', async () => {
+    await noaCloud.signOut(); state.cloudUser = null; updateAuthUi();
+  });
 });

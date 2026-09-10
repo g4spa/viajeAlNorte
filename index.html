@@ -10,6 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase.js"></script>
 </head>
 <body>
   <header class="hero" id="inicio">
@@ -36,6 +39,11 @@
     <div class="hero-meta"><span><b>11</b> días</span><span><b>6</b> destinos</span><span><b>~1.400</b> km</span><span class="meta-note">Una historia para volver a leer</span></div>
   </header>
 
+  <section class="cloud-banner" id="cloud-banner" hidden>
+    <div><strong id="cloud-title">Bitácora sincronizada</strong><span id="cloud-message"></span></div>
+    <form id="auth-form"><input id="auth-email" type="email" placeholder="Email" required><input id="auth-password" type="password" placeholder="Contraseña" minlength="6" required><button type="submit">Ingresar</button><button type="button" id="auth-signup">Crear cuenta</button></form>
+    <button class="cloud-logout" id="auth-logout" type="button" hidden>Cerrar sesión</button>
+  </section>
   <main>
     <section class="section route-section" id="ruta">
       <div class="section-heading"><div><p class="eyebrow">el mapa de nuestros días</p><h2>La ruta, sin apuro.</h2></div><p class="section-note">De la puna a la selva<br>y de vuelta a casa.</p></div>
