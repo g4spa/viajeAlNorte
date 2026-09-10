@@ -269,3 +269,11 @@ const igSlots = [
   { label: 'Termas del Río Jordán',   url: '' },
   { label: 'Cachi & Los Cardones',    url: '' },
 ];
+
+const mapPlaces = [
+  { name: 'Salta', x: 88, y: 78, weather: 'Salta' },
+  { name: 'Purmamarca', x: 70, y: 28, weather: 'Purmamarca' },
+  { name: 'Tilcara', x: 57, y: 20, weather: 'Tilcara' },
+  { name: 'San Francisco', x: 39, y: 45, weather: 'San Francisco' },
+  { name: 'Cachi', x: 62, y: 78, weather: 'Cachi' },
+];
