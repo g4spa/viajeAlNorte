@@ -62,7 +62,17 @@ function renderMemories() {
       <article class="entry"><div class="entry-head"><span>${memory.mood} ${escapeHtml(memory.place || 'Sin destino')}</span><span>${escapeHtml(memory.date || 'Sin fecha')} <button data-remove-memory="${index}" aria-label="Eliminar entrada">×</button></span></div>
       <p>${escapeHtml(memory.text)}</p><button class="favorite-memory" data-favorite-memory="${index}" type="button">${state.favorites.includes(`memory-${memory.id || index}`) ? '♥' : '♡'}</button></article>`).join('');
     target.querySelectorAll('[data-remove-memory]').forEach(button => button.addEventListener('click', () => {
-      state.memories.splice(Number(button.dataset.removeMemory), 1); store.set('noa-memories', state.memories); renderMemories(); renderStats();
+      const index = Number(button.dataset.removeMemory);
+      const memory = state.memories[index];
+      if (state.cloudUser && memory.id) {
+        noaCloud.client.from('memories').delete().eq('id', memory.id).eq('user_id', state.cloudUser.id)
+          .then(({ error }) => {
+            if (error) { showCloudError(error); return; }
+            state.memories.splice(index, 1); renderMemories(); renderStats();
+          }).catch(showCloudError);
+      } else {
+        state.memories.splice(index, 1); store.set('noa-memories', state.memories); renderMemories(); renderStats();
+      }
     }));
     target.querySelectorAll('[data-favorite-memory]').forEach(button => button.addEventListener('click', () => {
       const memory = state.memories[Number(button.dataset.favoriteMemory)];
@@ -74,7 +84,7 @@ function renderMemories() {
 
 function renderChecklist() {
   const target = document.querySelector('#checklist');
-  target.innerHTML = checks.slice(0, 10).map((item, index) => `
+  target.innerHTML = checks.map((item, index) => `
     <label class="check-item ${state.checks[index] ? 'done' : ''}"><input type="checkbox" data-check="${index}" ${state.checks[index] ? 'checked' : ''}>${item}</label>`).join('');
   target.querySelectorAll('[data-check]').forEach(input => input.addEventListener('change', () => {
     state.checks[input.dataset.check] = input.checked; store.set('noa-checks', state.checks); input.parentElement.classList.toggle('done', input.checked); updateProgress();
@@ -85,7 +95,7 @@ function renderChecklist() {
 
 function updateProgress() {
   const complete = Object.values(state.checks).filter(Boolean).length;
-  const percent = Math.round(complete / 10 * 100);
+  const percent = Math.round(complete / checks.length * 100);
   document.querySelector('#progress-label').textContent = `${percent}%`;
   document.querySelector('#progress-bar').style.width = `${percent}%`;
 }
@@ -187,7 +197,7 @@ async function loadCloudData() {
   if (!state.cloudUser) return;
   const data = await noaCloud.loadData(state.cloudUser.id);
   state.memories = data.memories.map(item => ({ ...item, date: item.memory_date }));
-  state.checks = Object.fromEntries(data.checklist.map(item => [checks.indexOf(item.label), item.completed]));
+  state.checks = Object.fromEntries(data.checklist.map(item => [checks.indexOf(item.label), item.completed]).filter(([index]) => index >= 0));
   state.favorites = data.favorites.map(item => `${item.resource_type}-${item.resource_id}`);
   state.media = data.media;
   renderMemories(); renderChecklist(); renderMedia(); renderStats();
